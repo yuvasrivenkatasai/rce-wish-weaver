@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Menu, X, Sparkles } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
+import rceLogo from '@/assets/rce-logo.avif';
 
 const Navbar = () => {
   const { language, setLanguage, t } = useLanguage();
@@ -20,9 +21,11 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-gold-light flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-primary-foreground" />
-            </div>
+            <img 
+              src={rceLogo} 
+              alt="RCE Logo" 
+              className="w-12 h-12 rounded-xl object-contain bg-white/10 p-1"
+            />
             <div className="hidden sm:block">
               <h1 className="text-lg font-display font-semibold text-foreground">RCE New Year Wishes</h1>
               <p className="text-xs text-muted-foreground">2026</p>

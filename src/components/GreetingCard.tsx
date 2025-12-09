@@ -1,9 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Download, Link, QrCode, RefreshCw, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
+import { launchConfetti } from './Fireworks';
 
 export interface GreetingData {
   name: string;
@@ -22,6 +23,11 @@ interface GreetingCardProps {
 const GreetingCard = ({ greeting, onNewGreeting }: GreetingCardProps) => {
   const { t } = useLanguage();
   const cardRef = useRef<HTMLDivElement>(null);
+
+  // Launch confetti when greeting card appears
+  useEffect(() => {
+    launchConfetti();
+  }, []);
 
   const handleDownload = async () => {
     if (!cardRef.current) return;
@@ -68,24 +74,31 @@ const GreetingCard = ({ greeting, onNewGreeting }: GreetingCardProps) => {
   };
 
   return (
-    <section className="py-20 px-4">
-      <div className="container mx-auto max-w-3xl">
-        {/* Confetti effect */}
-        <div className="relative">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-2 h-2 rounded-full"
+    <section className="py-20 px-4 relative">
+      {/* Floating celebration particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {Array.from({ length: 30 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute animate-celebration-float"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${4 + Math.random() * 4}s`,
+            }}
+          >
+            <div 
+              className="w-2 h-2 rounded-full opacity-60"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: '-20px',
-                backgroundColor: ['#FFD700', '#7C3AED', '#EC4899', '#10B981'][Math.floor(Math.random() * 4)],
-                animation: `confetti ${3 + Math.random() * 2}s ease-out forwards`,
-                animationDelay: `${Math.random() * 0.5}s`,
+                backgroundColor: ['hsl(var(--primary))', 'hsl(var(--gold-light))', 'hsl(var(--violet))', 'hsl(var(--accent))'][Math.floor(Math.random() * 4)],
               }}
             />
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
+      
+      <div className="container mx-auto max-w-3xl relative z-10">
 
         {/* Card */}
         <div

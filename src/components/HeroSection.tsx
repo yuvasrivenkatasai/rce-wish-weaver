@@ -3,6 +3,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Sparkles, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Countdown from './Countdown';
+import rceLogo from '@/assets/rce-logo.avif';
 
 interface HeroSectionProps {
   onGetGreeting: () => void;
@@ -20,9 +21,9 @@ const HeroSection = ({ onGetGreeting, onViewSample }: HeroSectionProps) => {
       <div className="absolute bottom-1/3 left-1/4 w-2 h-2 bg-accent rounded-full animate-float" style={{ animationDelay: '2s' }} />
 
       <div className="container mx-auto text-center max-w-4xl">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-8 animate-fade-in">
-          <Sparkles className="w-4 h-4 text-primary" />
+        {/* Badge with Logo */}
+        <div className="inline-flex items-center gap-3 px-5 py-3 rounded-full bg-primary/10 border border-primary/20 mb-8 animate-fade-in">
+          <img src={rceLogo} alt="RCE Logo" className="w-10 h-10 rounded-full object-contain bg-white/20" />
           <span className="text-sm text-primary font-medium">Ramachandra College of Engineering</span>
         </div>
 

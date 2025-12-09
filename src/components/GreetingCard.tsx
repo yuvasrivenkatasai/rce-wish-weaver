@@ -1,10 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { Download, Link, QrCode, RefreshCw, Sparkles } from 'lucide-react';
+import { Download, Link, QrCode, RefreshCw } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import html2canvas from 'html2canvas';
 import { launchConfetti } from './Fireworks';
+import rceLogo from '@/assets/rce-logo.avif';
 
 export interface GreetingData {
   name: string;
@@ -111,8 +112,8 @@ const GreetingCard = ({ greeting, onNewGreeting }: GreetingCardProps) => {
           
           {/* Header */}
           <div className="relative text-center mb-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-              <Sparkles className="w-4 h-4 text-primary" />
+            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
+              <img src={rceLogo} alt="RCE Logo" className="w-8 h-8 rounded-full object-contain bg-white/20" />
               <span className="text-sm text-primary font-medium">Ramachandra College of Engineering</span>
             </div>
             

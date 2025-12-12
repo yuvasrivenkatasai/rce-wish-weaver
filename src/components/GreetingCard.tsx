@@ -148,49 +148,74 @@ const GreetingCard = ({ greeting, onNewGreeting, onBackHome }: GreetingCardProps
         {/* Card */}
         <div
           ref={cardRef}
-          className="glass-card-strong p-8 sm:p-12 relative overflow-visible"
-          style={{ background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.95) 0%, rgba(15, 15, 35, 0.98) 100%)', borderRadius: '1.5rem' }}
+          className="relative p-2 rounded-3xl overflow-visible"
+          style={{ 
+            background: 'linear-gradient(135deg, hsl(45, 90%, 55%) 0%, hsl(35, 85%, 50%) 25%, hsl(280, 70%, 50%) 50%, hsl(200, 80%, 50%) 75%, hsl(45, 90%, 55%) 100%)',
+          }}
         >
-          {/* Background decorations - contained within card bounds */}
-          <div className="absolute top-4 right-4 w-32 h-32 bg-primary/30 rounded-full blur-2xl" />
-          <div className="absolute bottom-4 left-4 w-28 h-28 bg-violet/30 rounded-full blur-2xl" />
-          
-          {/* Header */}
-          <div className="relative text-center mb-8">
-            <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-              <img src={rceLogo} alt="RCE Logo" className="w-8 h-8 rounded-full object-contain bg-white/20" />
-              <span className="text-sm text-primary font-medium">Ramachandra College of Engineering</span>
+          {/* Inner card */}
+          <div
+            className="relative p-8 sm:p-12 rounded-2xl overflow-visible"
+            style={{ 
+              background: 'linear-gradient(135deg, rgba(26, 26, 46, 0.98) 0%, rgba(15, 15, 35, 0.99) 100%)',
+            }}
+          >
+            {/* Corner decorations */}
+            <div className="absolute top-3 left-3 w-8 h-8 border-l-2 border-t-2 border-gold-light/60 rounded-tl-lg" />
+            <div className="absolute top-3 right-3 w-8 h-8 border-r-2 border-t-2 border-gold-light/60 rounded-tr-lg" />
+            <div className="absolute bottom-3 left-3 w-8 h-8 border-l-2 border-b-2 border-gold-light/60 rounded-bl-lg" />
+            <div className="absolute bottom-3 right-3 w-8 h-8 border-r-2 border-b-2 border-gold-light/60 rounded-br-lg" />
+            
+            {/* Corner stars */}
+            <div className="absolute top-4 left-4 text-gold-light text-lg">✦</div>
+            <div className="absolute top-4 right-4 text-gold-light text-lg">✦</div>
+            <div className="absolute bottom-4 left-4 text-gold-light text-lg">✦</div>
+            <div className="absolute bottom-4 right-4 text-gold-light text-lg">✦</div>
+            
+            {/* Background glow decorations */}
+            <div className="absolute top-8 right-8 w-32 h-32 bg-primary/20 rounded-full blur-2xl" />
+            <div className="absolute bottom-8 left-8 w-28 h-28 bg-violet/20 rounded-full blur-2xl" />
+            
+            {/* Header */}
+            <div className="relative text-center mb-8">
+              <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
+                <img src={rceLogo} alt="RCE Logo" className="w-8 h-8 rounded-full object-contain bg-white/20" />
+                <span className="text-sm text-primary font-medium">Ramachandra College of Engineering</span>
+              </div>
+              
+              <h2 className="text-3xl sm:text-4xl font-display font-bold gradient-text mb-2">
+                {greeting.greetingTitle}
+              </h2>
+              
+              <p className="text-muted-foreground">
+                {greeting.branch} – {greeting.year} Year Student
+              </p>
             </div>
-            
-            <h2 className="text-3xl sm:text-4xl font-display font-bold gradient-text mb-2">
-              {greeting.greetingTitle}
-            </h2>
-            
-            <p className="text-muted-foreground">
-              {greeting.branch} – {greeting.year} Year Student
-            </p>
-          </div>
 
-          {/* Main Message */}
-          <div className="relative mb-8 text-center">
-            <p className="text-lg text-foreground leading-relaxed whitespace-pre-line">
-              {greeting.greetingBody}
-            </p>
-          </div>
+            {/* Main Message */}
+            <div className="relative mb-8 text-center">
+              <p className="text-lg text-foreground leading-relaxed whitespace-pre-line">
+                {greeting.greetingBody}
+              </p>
+            </div>
 
-          {/* Motivational Quote */}
-          <div className="relative glass-card p-6 mb-8">
-            <div className="text-4xl text-primary/30 font-serif absolute -top-2 left-4">"</div>
-            <p className="text-center text-foreground italic text-lg pl-8 pr-8">
-              {greeting.motivationalQuote}
-            </p>
-            <div className="text-4xl text-primary/30 font-serif absolute -bottom-6 right-4">"</div>
-          </div>
+            {/* Motivational Quote */}
+            <div className="relative glass-card p-6 mb-8 border border-gold-light/20">
+              <div className="text-4xl text-gold-light/40 font-serif absolute -top-2 left-4">"</div>
+              <p className="text-center text-foreground italic text-lg pl-8 pr-8">
+                {greeting.motivationalQuote}
+              </p>
+              <div className="text-4xl text-gold-light/40 font-serif absolute -bottom-6 right-4">"</div>
+            </div>
 
-          {/* Footer */}
-          <p className="text-center text-sm text-muted-foreground">
-            {t.greeting.footer}
-          </p>
+            {/* Footer */}
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-2">
+                {t.greeting.footer}
+              </p>
+              <p className="text-xs text-gold-light/50">✨ Happy New Year 2026 ✨</p>
+            </div>
+          </div>
         </div>
 
         {/* Action Buttons */}

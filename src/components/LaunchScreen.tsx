@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import confetti from 'canvas-confetti';
 
 interface LaunchScreenProps {
   onComplete: () => void;
@@ -9,32 +10,75 @@ const LaunchScreen = ({ onComplete }: LaunchScreenProps) => {
   const [countdown, setCountdown] = useState(3);
   const [fadeOut, setFadeOut] = useState(false);
 
+  // Launch celebratory effects during intro
+  const launchIntroEffects = useCallback(() => {
+    const duration = 4500;
+    const animationEnd = Date.now() + duration;
+    const colors = ['#FFD700', '#FFA500', '#3498db', '#ffffff', '#e67e22'];
+
+    const interval = setInterval(() => {
+      const timeLeft = animationEnd - Date.now();
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        return;
+      }
+
+      // Subtle crackers from sides
+      confetti({
+        particleCount: 3,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0, y: 0.6 },
+        colors: colors,
+        zIndex: 101,
+        scalar: 0.8,
+      });
+      confetti({
+        particleCount: 3,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1, y: 0.6 },
+        colors: colors,
+        zIndex: 101,
+        scalar: 0.8,
+      });
+    }, 150);
+
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
-    // Phase 1: Show intro for 3 seconds
+    // Start intro effects
+    const cleanup = launchIntroEffects();
+
+    // Phase 1: Show intro for 5 seconds
     const introTimer = setTimeout(() => {
       setFadeOut(true);
       setTimeout(() => {
         setFadeOut(false);
         setPhase('countdown');
       }, 500);
-    }, 3000);
+    }, 5000);
 
-    return () => clearTimeout(introTimer);
-  }, []);
+    return () => {
+      clearTimeout(introTimer);
+      cleanup?.();
+    };
+  }, [launchIntroEffects]);
 
   useEffect(() => {
     if (phase === 'countdown') {
       if (countdown > 0) {
         const timer = setTimeout(() => {
           setCountdown(prev => prev - 1);
-        }, 250);
+        }, 1200); // ~4 seconds total for countdown (3 numbers + launch)
         return () => clearTimeout(timer);
       } else {
         setFadeOut(true);
         setTimeout(() => {
           setPhase('done');
           onComplete();
-        }, 300);
+        }, 400);
       }
     }
   }, [phase, countdown, onComplete]);
@@ -43,18 +87,73 @@ const LaunchScreen = ({ onComplete }: LaunchScreenProps) => {
 
   return (
     <div 
-      className={`fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-500 ${
+      className={`fixed inset-0 z-[100] flex items-center justify-center transition-opacity duration-500 overflow-hidden ${
         fadeOut ? 'opacity-0' : 'opacity-100'
       }`}
       style={{
         background: 'linear-gradient(135deg, #0a1628 0%, #1a1a3e 50%, #0d1b2a 100%)',
       }}
     >
+      {/* Animated Stars Background */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(80)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-white animate-pulse"
+            style={{
+              width: Math.random() * 3 + 1 + 'px',
+              height: Math.random() * 3 + 1 + 'px',
+              left: Math.random() * 100 + '%',
+              top: Math.random() * 100 + '%',
+              animationDelay: Math.random() * 3 + 's',
+              animationDuration: Math.random() * 2 + 1.5 + 's',
+              opacity: Math.random() * 0.7 + 0.3,
+            }}
+          />
+        ))}
+        {/* Shooting stars */}
+        {[...Array(5)].map((_, i) => (
+          <div
+            key={`shooting-${i}`}
+            className="absolute w-1 h-1 bg-white rounded-full"
+            style={{
+              left: Math.random() * 80 + '%',
+              top: Math.random() * 40 + '%',
+              animation: `shooting-star ${3 + Math.random() * 2}s linear infinite`,
+              animationDelay: `${i * 1.5}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Glowing orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div 
+          className="absolute w-96 h-96 rounded-full opacity-20 animate-pulse"
+          style={{
+            background: 'radial-gradient(circle, #3498db 0%, transparent 70%)',
+            left: '-10%',
+            top: '20%',
+            animationDuration: '4s',
+          }}
+        />
+        <div 
+          className="absolute w-80 h-80 rounded-full opacity-15 animate-pulse"
+          style={{
+            background: 'radial-gradient(circle, #e67e22 0%, transparent 70%)',
+            right: '-5%',
+            bottom: '10%',
+            animationDuration: '5s',
+            animationDelay: '1s',
+          }}
+        />
+      </div>
+
       {phase === 'intro' && (
-        <div className="flex flex-col items-center animate-fade-in">
+        <div className="flex flex-col items-center animate-fade-in relative z-10">
           {/* RCE Logo with rotating gear */}
           <div className="relative w-64 h-48 mb-8">
-            <svg viewBox="0 0 300 200" className="w-full h-full">
+            <svg viewBox="0 0 300 200" className="w-full h-full drop-shadow-2xl">
               {/* C Letter - Static */}
               <path
                 d="M60 40 L60 160 L100 160 L100 140 L80 140 L80 60 L100 60 L100 40 Z"
@@ -104,7 +203,7 @@ const LaunchScreen = ({ onComplete }: LaunchScreenProps) => {
           </div>
 
           {/* Text below logo */}
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-wide">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-wide text-center drop-shadow-lg">
             RCE Welcomes 2026
           </h1>
           <p className="text-lg md:text-xl text-white/70 tracking-widest">
@@ -114,15 +213,40 @@ const LaunchScreen = ({ onComplete }: LaunchScreenProps) => {
       )}
 
       {phase === 'countdown' && (
-        <div className="flex flex-col items-center animate-fade-in">
-          <p className="text-2xl md:text-3xl text-white/80 font-light tracking-wider">
-            Launching in{' '}
-            <span className="text-white font-semibold text-4xl md:text-5xl animate-pulse">
+        <div className="flex flex-col items-center relative z-10">
+          <p className="text-2xl md:text-3xl text-white/80 font-light tracking-wider mb-4">
+            Launching in
+          </p>
+          <div className="relative">
+            <span 
+              key={countdown}
+              className="text-7xl md:text-9xl font-bold text-white animate-scale-in"
+              style={{
+                textShadow: '0 0 40px rgba(52, 152, 219, 0.8), 0 0 80px rgba(52, 152, 219, 0.4)',
+              }}
+            >
               {countdown > 0 ? countdown : '🚀'}
             </span>
-          </p>
+          </div>
         </div>
       )}
+
+      {/* CSS for shooting star animation */}
+      <style>{`
+        @keyframes shooting-star {
+          0% {
+            transform: translateX(0) translateY(0);
+            opacity: 1;
+          }
+          70% {
+            opacity: 1;
+          }
+          100% {
+            transform: translateX(200px) translateY(200px);
+            opacity: 0;
+          }
+        }
+      `}</style>
     </div>
   );
 };

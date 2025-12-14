@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import StarBackground from '@/components/StarBackground';
 import Navbar from '@/components/Navbar';
@@ -9,6 +9,8 @@ import GreetingCard, { GreetingData } from '@/components/GreetingCard';
 import AboutSection from '@/components/AboutSection';
 import Footer from '@/components/Footer';
 import SampleGreetingModal from '@/components/SampleGreetingModal';
+import LaunchScreen from '@/components/LaunchScreen';
+import { launchConfetti } from '@/components/Fireworks';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -17,6 +19,28 @@ const IndexContent = () => {
   const [greeting, setGreeting] = useState<GreetingData | null>(null);
   const [showSample, setShowSample] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [showLaunch, setShowLaunch] = useState(() => {
+    // Only show launch screen if not already shown this session
+    return !sessionStorage.getItem('rce_launch_shown');
+  });
+  const [showContent, setShowContent] = useState(() => {
+    // Show content immediately if launch already shown
+    return !!sessionStorage.getItem('rce_launch_shown');
+  });
+
+  const handleLaunchComplete = () => {
+    sessionStorage.setItem('rce_launch_shown', 'true');
+    setShowLaunch(false);
+    setShowContent(true);
+    
+    // Trigger celebratory fireworks once on first load
+    if (!sessionStorage.getItem('rce_fireworks_shown')) {
+      sessionStorage.setItem('rce_fireworks_shown', 'true');
+      setTimeout(() => {
+        launchConfetti();
+      }, 300);
+    }
+  };
 
   const scrollToForm = () => {
     setShowForm(true);
@@ -104,37 +128,43 @@ const IndexContent = () => {
   };
 
   return (
-    <div className="min-h-screen relative">
-      <StarBackground />
-      <Navbar />
+    <>
+      {showLaunch && <LaunchScreen onComplete={handleLaunchComplete} />}
       
-      <main className="relative z-10">
-        {greeting ? (
-          <div className="pt-24">
-            <GreetingCard greeting={greeting} onNewGreeting={handleNewGreeting} onBackHome={handleBackHome} />
-          </div>
-        ) : (
-          <>
-            <HeroSection 
-              onGetGreeting={scrollToForm}
-              onViewSample={() => setShowSample(true)}
-            />
-            <HowItWorks />
-            {showForm && (
-              <GreetingForm onSubmit={handleFormSubmit} isLoading={isLoading} />
+      {showContent && (
+        <div className="min-h-screen relative animate-fade-in">
+          <StarBackground />
+          <Navbar />
+          
+          <main className="relative z-10">
+            {greeting ? (
+              <div className="pt-24">
+                <GreetingCard greeting={greeting} onNewGreeting={handleNewGreeting} onBackHome={handleBackHome} />
+              </div>
+            ) : (
+              <>
+                <HeroSection 
+                  onGetGreeting={scrollToForm}
+                  onViewSample={() => setShowSample(true)}
+                />
+                <HowItWorks />
+                {showForm && (
+                  <GreetingForm onSubmit={handleFormSubmit} isLoading={isLoading} />
+                )}
+                <AboutSection />
+              </>
             )}
-            <AboutSection />
-          </>
-        )}
-      </main>
+          </main>
 
-      <Footer />
-      
-      <SampleGreetingModal 
-        isOpen={showSample}
-        onClose={() => setShowSample(false)}
-      />
-    </div>
+          <Footer />
+          
+          <SampleGreetingModal 
+            isOpen={showSample}
+            onClose={() => setShowSample(false)}
+          />
+        </div>
+      )}
+    </>
   );
 };
 

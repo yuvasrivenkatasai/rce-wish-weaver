@@ -6,10 +6,9 @@ interface LaunchScreenProps {
 }
 
 const LaunchScreen = ({ onComplete }: LaunchScreenProps) => {
-  const [phase, setPhase] = useState<'intro' | 'countdown' | 'rocket' | 'done'>('intro');
+  const [phase, setPhase] = useState<'intro' | 'countdown' | 'done'>('intro');
   const [countdown, setCountdown] = useState(3);
   const [fadeOut, setFadeOut] = useState(false);
-  const [rocketLaunched, setRocketLaunched] = useState(false);
 
   // Launch celebratory effects during intro
   const launchIntroEffects = useCallback(() => {
@@ -75,29 +74,18 @@ const LaunchScreen = ({ onComplete }: LaunchScreenProps) => {
         }, 1000);
         return () => clearTimeout(timer);
       } else {
-        // Show rocket emoji for a moment, then launch
-        const rocketTimer = setTimeout(() => {
-          setPhase('rocket');
-          setRocketLaunched(true);
+        // Show rocket emoji briefly, then complete
+        const completeTimer = setTimeout(() => {
+          setFadeOut(true);
+          setTimeout(() => {
+            setPhase('done');
+            onComplete();
+          }, 300);
         }, 800);
-        return () => clearTimeout(rocketTimer);
+        return () => clearTimeout(completeTimer);
       }
     }
-  }, [phase, countdown]);
-
-  useEffect(() => {
-    if (phase === 'rocket' && rocketLaunched) {
-      // Rocket animation duration, then complete
-      const completeTimer = setTimeout(() => {
-        setFadeOut(true);
-        setTimeout(() => {
-          setPhase('done');
-          onComplete();
-        }, 300);
-      }, 1000);
-      return () => clearTimeout(completeTimer);
-    }
-  }, [phase, rocketLaunched, onComplete]);
+  }, [phase, countdown, onComplete]);
 
   if (phase === 'done') return null;
 
@@ -257,43 +245,6 @@ const LaunchScreen = ({ onComplete }: LaunchScreenProps) => {
         </div>
       )}
 
-      {phase === 'rocket' && (
-        <div className="fixed inset-0 z-20 pointer-events-none overflow-hidden">
-          {/* Rocket launching diagonally */}
-          <div 
-            className="absolute text-8xl md:text-9xl"
-            style={{
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%) rotate(-45deg)',
-              animation: 'rocket-launch 1s cubic-bezier(0.4, 0, 0.2, 1) forwards',
-            }}
-          >
-            <div className="relative">
-              🚀
-              {/* Motion trail */}
-              <div 
-                className="absolute top-1/2 -left-2 w-32 h-4 -translate-y-1/2 rotate-180"
-                style={{
-                  background: 'linear-gradient(90deg, transparent 0%, rgba(255, 165, 0, 0.6) 30%, rgba(255, 100, 0, 0.8) 60%, rgba(255, 200, 100, 0.9) 100%)',
-                  filter: 'blur(4px)',
-                  animation: 'trail-glow 0.3s ease-in-out infinite alternate',
-                }}
-              />
-              {/* Glow effect */}
-              <div 
-                className="absolute inset-0 rounded-full"
-                style={{
-                  background: 'radial-gradient(circle, rgba(255, 165, 0, 0.4) 0%, transparent 70%)',
-                  filter: 'blur(20px)',
-                  transform: 'scale(2)',
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* CSS for animations */}
       <style>{`
         @keyframes shooting-star {
@@ -307,28 +258,6 @@ const LaunchScreen = ({ onComplete }: LaunchScreenProps) => {
           100% {
             transform: translateX(200px) translateY(200px);
             opacity: 0;
-          }
-        }
-        
-        @keyframes rocket-launch {
-          0% {
-            transform: translate(-50%, -50%) rotate(-45deg) scale(1);
-            opacity: 1;
-          }
-          100% {
-            transform: translate(150vw, -150vh) rotate(-45deg) scale(0.5);
-            opacity: 0;
-          }
-        }
-        
-        @keyframes trail-glow {
-          0% {
-            opacity: 0.6;
-            width: 8rem;
-          }
-          100% {
-            opacity: 1;
-            width: 12rem;
           }
         }
       `}</style>
